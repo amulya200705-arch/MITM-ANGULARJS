@@ -8,15 +8,16 @@
      <script src="app.js"></script>
 
 </head>
-<body ng-controller="MyController">
-    
-<h1>student details</h1>
-<h2>{{name}}</h2>
+<body 
 
-<h3>update the student name</h3>
+<div ng-controller="collegeController">
 
-<input type=""text" ng-model="name">
-
-<p>updated name: {{name}}</p>
+<h1>Welcome to {{collegename}}</h1>
+<hr>
+<div ng-controller="studentcontroller">
+    <h2>{{name}}</h2>
+    <h3>{{department}}</h3>
+</div>
+</div>
 </body>
 </html>
