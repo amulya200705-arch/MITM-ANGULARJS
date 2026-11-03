@@ -20,5 +20,6 @@
   "bugs": {
     "url": "https://github.com/amulya200705-arch/MITM-ANGULARJS/issues"
   },
-  "homepage": "https://github.com/amulya200705-arch/MITM-ANGULARJS#readme"
+  "homepage": "https://github.com/amulya200705-arch/MITM-ANGULARJS#readme",
+  "devDependencies": {}
 }
