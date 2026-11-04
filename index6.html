@@ -1,68 +1,55 @@
-
 <!DOCTYPE html>
-<html lang="en" ng-app="myApp">
+<html ng-app="myApp">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Registration</title>
+    <title>Student Details</title>
 
-    <!-- AngularJS Library -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <script src="app.js"></script>
 </head>
 
 <body>
 
-    <div ng-controller="CollegeController">
+    <div ng-controller="StudentController">
 
-        <h2>Welcome to {{collegeName}}</h2>
-        <hr>
+        <h2>Student Registration</h2>
 
-        <div ng-controller="StudentController">
+        <label>Name:</label>
+        <input type="text" ng-model="name">
+        <br><br>
 
-            <h2>Student Registration</h2>
+        <label>Age:</label>
+        <input type="number" ng-model="age">
+        <br><br>
 
-            <label>Student Name:</label>
-            <input type="text" ng-model="name">
-            <br><br>
+        <label>Department:</label>
+        <input type="text" ng-model="department">
+        <br><br>
 
-            <label>Age:</label>
-            <input type="number" ng-model="age">
-            <br><br>
+        <label>Semester:</label>
+        <input type="number" ng-model="semester">
 
-            <label>Department:</label>
-            <input type="text" ng-model="department">
-            <br><br>
+        <h3>Student Details</h3>
 
-            <label>Semester:</label>
-            <input type="number" ng-model="semester">
-            <br><br>
+        <p>Name: {{name}}</p>
+        <p>Age: {{age}}</p>
+        <p>Department: {{department}}</p>
+        <p>Semester: {{semester}}</p>
 
-            <hr>
+        <h2>Student List</h2>
 
-            <h3>Student Details</h3>
-
-            <p>Name: {{name}}</p>
-            <p>Age: {{age}}</p>
-            <p>Department: {{department}}</p>
-            <p>Semester: {{semester}}</p>
-
-            <hr>
-
-            <h2>Student List</h2>
-
-            <ul>
-                <li ng-repeat="student in students">
-                    {{student}}
-                </li>
-            </ul>
-
-        </div>
+        <ul>
+            <li ng-repeat="student in students">
+               
+            </li>
+        </ul>
+<p>AMULYA E</p>
+<p>AKSHAY U SHET</p>
+<P>AMRUTHA H S</P>
+<p>AYUSH KUMAR K S</p>
     </div>
-
-    <!-- JavaScript File -->
-    <script src="app.js"></script>
 
 </body>
 </html>
+
 
