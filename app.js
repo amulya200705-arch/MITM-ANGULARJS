@@ -1,300 +1,252 @@
+var app = angular.module('taskApp', []);
 
-const { useState } = React;
+app.controller('PlannerController', function($scope, $interval) {
 
-function App() {
+    // Navigation state
+    $scope.currentTab = 'tasks';
+    $scope.switchTab = function(tabName) {
+        $scope.currentTab = tabName;
+    };
 
-    const [active, setActive] = useState("Home");
-
-    const menu = [
-        "Home",
-        "About",
-        "Skills",
-        "Projects",
-        "Contact"
+    // Load data from LocalStorage
+    var savedData = JSON.parse(localStorage.getItem('bloom_ultimate_data')) || {};
+    
+    $scope.tasks = savedData.tasks || [
+        { id: 1, title: 'Complete AngularJS Project Documentation', description: 'Write architecture breakdown & test REST endpoints', priority: 'High', category: 'Academics', recurrence: 'None', completed: false, dueDate: '2026-11-12' },
+        { id: 2, title: 'Grocery shopping for the week', description: 'Milk, vegetables, fruits, and bakery items', priority: 'Medium', category: 'Shopping', recurrence: 'Weekly', completed: false, dueDate: '' },
+        { id: 3, title: '30-minute cardio workout', description: 'Evening run and stretching', priority: 'Low', category: 'Fitness', recurrence: 'Daily', completed: true, dueDate: '' }
     ];
 
-    const skills = [
-        "HTML",
-        "CSS",
-        "JavaScript",
-        "React",
-        "Java",
-        "C Programming",
-        "Git",
-        "GitHub"
+    $scope.habits = savedData.habits || [
+        { id: 1, name: 'Drink 2L water daily' },
+        { id: 2, name: 'Code for 1 hour' }
     ];
 
-    const projects = [
-        {
-            title: "Student Registration Form",
-            description: "A student registration form created using HTML, CSS and React."
-        },
-        {
-            title: "Personal Portfolio",
-            description: "A responsive portfolio website showcasing my skills and projects."
-        },
-        {
-            title: "Web Development",
-            description: "Exploring frontend development and modern technologies."
+    $scope.quickNotes = savedData.quickNotes || 'Remember to review pending tasks every evening!';
+    $scope.taskHistory = savedData.taskHistory || ['Initialized Bloom Ultimate Planner'];
+
+    // Smart Suggestions Rotation
+    $scope.smartSuggestion = "Break large tasks into smaller subtasks to maintain momentum!";
+
+    // Form Initializer
+    $scope.isEditing = false;
+    $scope.editId = null;
+    $scope.taskForm = {
+        title: '',
+        description: '',
+        priority: 'Medium',
+        category: 'Personal',
+        recurrence: 'None',
+        dueDate: null
+    };
+
+    // Filter & Search State
+    $scope.selectedCategory = 'All';
+    $scope.searchQuery = '';
+
+    $scope.setCategory = function(cat) {
+        $scope.selectedCategory = cat;
+    };
+
+    $scope.categoryFilter = function(task) {
+        if ($scope.selectedCategory === 'All') return true;
+        return task.category === $scope.selectedCategory;
+    };
+
+    // Save Task (Create or Update)
+    $scope.saveTask = function() {
+        if (!$scope.taskForm.title) return;
+
+        if ($scope.isEditing) {
+            var task = $scope.tasks.find(t => t.id === $scope.editId);
+            if (task) {
+                task.title = $scope.taskForm.title;
+                task.description = $scope.taskForm.description;
+                task.priority = $scope.taskForm.priority;
+                task.category = $scope.taskForm.category;
+                task.recurrence = $scope.taskForm.recurrence;
+                task.dueDate = $scope.taskForm.dueDate;
+                $scope.taskHistory.unshift('Updated task: ' + task.title);
+            }
+            $scope.isEditing = false;
+            $scope.editId = null;
+        } else {
+            var newTask = {
+                id: Date.now(),
+                title: $scope.taskForm.title,
+                description: $scope.taskForm.description,
+                priority: $scope.taskForm.priority,
+                category: $scope.taskForm.category,
+                recurrence: $scope.taskForm.recurrence,
+                completed: false,
+                dueDate: $scope.taskForm.dueDate || ''
+            };
+            $scope.tasks.push(newTask);
+            $scope.taskHistory.unshift('Created task: ' + newTask.title);
         }
-    ];
 
-    return (
-
-        <div className="app">
-
-            {/* SIDEBAR */}
-
-            <aside className="sidebar">
-
-                <h2 className="logo">✦ AMULYA'S SPACE</h2>
-
-                <p className="menu-title">MENU</p>
-
-                {menu.map((item) => (
-
-                    <button
-                        key={item}
-                        className={active === item ? "nav active" : "nav"}
-                        onClick={() => setActive(item)}
-                    >
-                        {item}
-                    </button>
-
-                ))}
-
-                <div className="sidebar-bottom">
-
-                    <p>CREATED WITH PASSION</p>
-
-                    <span>© 2026 Amulya E.</span>
-
-                </div>
-
-            </aside>
-
-
-            {/* MAIN CONTENT */}
-
-            <main className="main">
-
-                <header className="topbar">
-
-                    <h3>My Portfolio</h3>
-
-                    <span className="status">
-                        ● Available to learn
-                    </span>
-
-                </header>
-
-
-                {/* HOME SECTION */}
-
-                {active === "Home" && (
-
-                    <section className="hero">
-
-                        <p className="green-text">
-                            WELCOME TO MY WORLD
-                        </p>
-
-                        <h1>
-                            Hello, I'm <span>Amulya E.</span>
-                        </h1>
-
-                        <h2>
-                            Information Science Engineering Student
-                        </h2>
-
-                        <p className="description">
-                            I am an enthusiastic engineering student
-                            interested in programming, web development
-                            and technology. I love learning new skills
-                            and building creative projects.
-                        </p>
-
-                        <button
-                            className="green-button"
-                            onClick={() => setActive("Projects")}
-                        >
-                            EXPLORE MY PROJECTS ↗
-                        </button>
-
-                    </section>
-
-                )}
-
-
-                {/* ABOUT SECTION */}
-
-                {active === "About" && (
-
-                    <section className="content">
-
-                        <p className="green-text">
-                            GET TO KNOW ME
-                        </p>
-
-                        <h1>About Me</h1>
-
-                        <div className="card">
-
-                            <h2>Who am I?</h2>
-
-                            <p>
-                                I am Amulya E., an Information Science
-                                and Engineering student passionate about
-                                technology, creativity and continuous learning.
-                            </p>
-
-                            <p>
-                                My goal is to develop my technical skills,
-                                work on interesting projects and grow as
-                                a software developer.
-                            </p>
-
-                        </div>
-
-                    </section>
-
-                )}
-
-
-                {/* SKILLS SECTION */}
-
-                {active === "Skills" && (
-
-                    <section className="content">
-
-                        <p className="green-text">
-                            WHAT I KNOW
-                        </p>
-
-                        <h1>My Skills</h1>
-
-                        <div className="grid">
-
-                            {skills.map((skill) => (
-
-                                <div className="skill-card" key={skill}>
-
-                                    <span>✦</span>
-
-                                    <h3>{skill}</h3>
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    </section>
-
-                )}
-
-
-                {/* PROJECTS SECTION */}
-
-                {active === "Projects" && (
-
-                    <section className="content">
-
-                        <p className="green-text">
-                            WHAT I'VE BUILT
-                        </p>
-
-                        <h1>My Projects</h1>
-
-                        <div className="grid">
-
-                            {projects.map((project, index) => (
-
-                                <div className="card" key={index}>
-
-                                    <span className="project-number">
-                                        PROJECT 0{index + 1}
-                                    </span>
-
-                                    <h2>{project.title}</h2>
-
-                                    <p>{project.description}</p>
-
-                                    <span className="project-icon">
-                                        ↗
-                                    </span>
-
-                                </div>
-
-                            ))}
-
-                        </div>
-
-                    </section>
-
-                )}
-
-
-                {/* CONTACT SECTION */}
-
-                {active === "Contact" && (
-
-                    <section className="content">
-
-                        <p className="green-text">
-                            LET'S CONNECT
-                        </p>
-
-                        <h1>Contact Me</h1>
-
-                        <div className="card">
-
-                            <h2>Get in touch!</h2>
-
-                            <p>
-                                Name: Amulya E.
-                            </p>
-
-                            <p>
-                                Email: YOUR_EMAIL@gmail.com
-                            </p>
-
-                            <p>
-                                Location: Mysuru, Karnataka
-                            </p>
-
-                            <button
-                                className="green-button"
-                                onClick={() =>
-                                    window.location.href =
-                                    "mailto:YOUR_EMAIL@gmail.com"
-                                }
-                            >
-                                SEND EMAIL ↗
-                            </button>
-
-                        </div>
-
-                    </section>
-
-                )}
-
-
-                <footer>
-
-                    Made with creativity and passion ✦
-
-                </footer>
-
-            </main>
-
-        </div>
-
-    );
-
-}
-
-ReactDOM.createRoot(
-    document.getElementById("root")
-).render(<App />);
-
+        $scope.taskForm = { title: '', description: '', priority: 'Medium', category: 'Personal', recurrence: 'None', dueDate: null };
+        $scope.saveData();
+    };
+
+    // Edit Task Trigger
+    $scope.editTask = function(task) {
+        $scope.isEditing = true;
+        $scope.editId = task.id;
+        $scope.taskForm = {
+            title: task.title,
+            description: task.description,
+            priority: task.priority,
+            category: task.category,
+            recurrence: task.recurrence,
+            dueDate: task.dueDate ? new Date(task.dueDate) : null
+        };
+        $scope.switchTab('tasks');
+    };
+
+    // Delete Confirmation Modal Logic
+    $scope.showDeleteModal = false;
+    $scope.pendingDeleteId = null;
+
+    $scope.confirmDelete = function(id) {
+        $scope.pendingDeleteId = id;
+        $scope.showDeleteModal = true;
+    };
+
+    $scope.executeDelete = function() {
+        $scope.tasks = $scope.tasks.filter(t => t.id !== $scope.pendingDeleteId);
+        $scope.taskHistory.unshift('Deleted task');
+        $scope.showDeleteModal = false;
+        $scope.pendingDeleteId = null;
+        $scope.saveData();
+    };
+
+    $scope.cancelDelete = function() {
+        $scope.showDeleteModal = false;
+        $scope.pendingDeleteId = null;
+    };
+
+    // Batch Actions
+    $scope.markAllDone = function() {
+        angular.forEach($scope.tasks, function(t) { t.completed = true; });
+        $scope.taskHistory.unshift('Marked all tasks as completed');
+        $scope.saveData();
+    };
+
+    $scope.clearCompleted = function() {
+        $scope.tasks = $scope.tasks.filter(t => !t.completed);
+        $scope.taskHistory.unshift('Cleared completed tasks');
+        $scope.saveData();
+    };
+
+    // Overdue Check
+    $scope.isOverdue = function(dateStr) {
+        if (!dateStr) return false;
+        var today = new Date();
+        var due = new Date(dateStr);
+        return due < today && !dateStr.completed;
+    };
+
+    // Habit Handlers
+    $scope.addHabit = function() {
+        if (!$scope.newHabitName) return;
+        $scope.habits.push({ id: Date.now(), name: $scope.newHabitName });
+        $scope.newHabitName = '';
+        $scope.saveData();
+    };
+
+    $scope.deleteHabit = function(id) {
+        $scope.habits = $scope.habits.filter(h => h.id !== id);
+        $scope.saveData();
+    };
+
+    // Pomodoro Timer Logic
+    $scope.timerSeconds = 25 * 60;
+    $scope.timerRunning = false;
+    var timerPromise = null;
+
+    $scope.formatTime = function(sec) {
+        var m = Math.floor(sec / 60);
+        var s = sec % 60;
+        return (m < 10 ? '0' : '') + m + ':' + (s < 10 ? '0' : '') + s;
+    };
+
+    $scope.startTimer = function() {
+        if (!$scope.timerRunning) {
+            $scope.timerRunning = true;
+            timerPromise = $interval(function() {
+                if ($scope.timerSeconds > 0) {
+                    $scope.timerSeconds--;
+                } else {
+                    $scope.pauseTimer();
+                    alert('Focus session completed! Great job 🎉');
+                }
+            }, 1000);
+        }
+    };
+
+    $scope.pauseTimer = function() {
+        $scope.timerRunning = false;
+        if (timerPromise) $interval.cancel(timerPromise);
+    };
+
+    $scope.resetTimer = function() {
+        $scope.pauseTimer();
+        $scope.timerSeconds = 25 * 60;
+    };
+
+    // Calendar Days Generator (Nov 2026)
+    $scope.calendarDays = [];
+    for(var i = 1; i <= 30; i++) { $scope.calendarDays.push(i); }
+
+    // Metrics
+    $scope.getPendingCount = function() {
+        return $scope.tasks.filter(t => !t.completed).length;
+    };
+
+    $scope.getCompletedCount = function() {
+        return $scope.tasks.filter(t => t.completed).length;
+    };
+
+    $scope.getProgressPercent = function() {
+        if ($scope.tasks.length === 0) return 0;
+        return Math.round(($scope.getCompletedCount() / $scope.tasks.length) * 100);
+    };
+
+    // Export to CSV
+    $scope.exportToCSV = function() {
+        var csvContent = "data:text/csv;charset=utf-8,Title,Category,Priority,Status,Due Date\n";
+        $scope.tasks.forEach(function(t) {
+            csvContent += `"${t.title}","${t.category}","${t.priority}","${t.completed ? 'Completed' : 'Pending'}","${t.dueDate}"\n`;
+        });
+        var encodedUri = encodeURI(csvContent);
+        var link = document.createElement("a");
+        link.setAttribute("href", encodedUri);
+        link.setAttribute("download", "bloom_tasks_report.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    };
+
+    // JSON Backup
+    $scope.backupData = function() {
+        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(localStorage));
+        var downloadAnchor = document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "bloom_backup.json");
+        document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    };
+
+    // Save state to LocalStorage
+    $scope.saveData = function() {
+        var dataToSave = {
+            tasks: $scope.tasks,
+            habits: $scope.habits,
+            quickNotes: $scope.quickNotes,
+            taskHistory: $scope.taskHistory
+        };
+        localStorage.setItem('bloom_ultimate_data', JSON.stringify(dataToSave));
+    };
+});
